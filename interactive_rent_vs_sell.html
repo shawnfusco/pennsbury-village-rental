@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Rent vs Sell Calculator with Charts</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        .page-title {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .top-section {
+            display: grid;
+            grid-template-columns: 300px 300px 300px;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .top-recommendation {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .main-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .chart-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        .control-panel {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            height: fit-content;
+        }
+        .control-panel.general {
+            border-left: 4px solid #6c757d;
+        }
+        .control-panel.rental {
+            border-left: 4px solid #27ae60;
+        }
+        .control-panel.selling {
+            border-left: 4px solid #3498db;
+        }
+        .control-section {
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .control-section:last-child {
+            border-bottom: none;
+        }
+        .control-section h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .slider-group {
+            margin-bottom: 8px;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+            font-weight: bold;
+            color: #34495e;
+            font-size: 13px;
+        }
+        .slider-value {
+            color: #3498db;
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: none;
+        }
+        /* Red slider for year selection */
+        #analysisYears::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e74c3c;
+            cursor: pointer;
+        }
+        #analysisYears::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e74c3c;
+            cursor: pointer;
+            border: none;
+        }
+        .input-group {
+            margin-bottom: 8px;
+        }
+        label {
+            display: block;
+            margin-bottom: 3px;
+            font-weight: bold;
+            color: #34495e;
+            font-size: 13px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 6px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+        input[type="number"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        .chart-container {
+            position: relative;
+            height: 500px;
+            margin-bottom: 10px;
+        }
+        .summary-cards {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            align-items: center;
+        }
+        .chart-only {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .summary-card {
+            background: #ecf0f1;
+            padding: 20px 16px;
+            border-radius: 10px;
+            text-align: center;
+            border-top: 5px solid #6c757d;
+            min-width: 280px;
+        }
+        .summary-card.better {
+            background: #e8f5e8;
+        }
+        .summary-card#rentCard {
+            border-top-color: #27ae60;
+        }
+        .summary-card#sellCard {
+            border-top-color: #3498db;
+        }
+        .summary-card#rentCard.better {
+            border-top-color: #27ae60;
+            background: #e8f5e8;
+        }
+        .summary-card#sellCard.better {
+            border-top-color: #3498db;
+            background: #e3f2fd;
+        }
+        .summary-card h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 17px;
+        }
+        .summary-value {
+            font-size: 26px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .recommendation {
+            background: #3498db;
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            max-width: 280px;
+        }
+        .recommendation.rent-better { background: #27ae60; }
+        .recommendation.sell-better { background: #3498db; }
+        
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            color: #3498db;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 280px;
+            background-color: #2c3e50;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -140px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            line-height: 1.4;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #2c3e50 transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        @media (max-width: 1200px) {
+            .controls-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .chart-container {
+                height: 300px;
+            }
+        }
+        @media (max-width: 768px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            .summary-cards {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Top Section with Summary Cards and Recommendation -->
+        <div class="top-section">
+            <div class="summary-card" id="rentCard">
+                <h4>🏘️ Keep & Rent</h4>
+                <div class="summary-value" id="rentTotal">$0</div>
+            </div>
+            
+            <div id="recommendation" class="recommendation">
+                <div id="recommendationText"></div>
+                <div style="margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.3);">
+                    <div class="slider-label" style="color: white; font-size: 11px; margin-bottom: 2px;">
+                        <span>📅 Analysis Year</span>
+                        <span class="slider-value" id="yearsValue" style="color: white;">30 years</span>
+                    </div>
+                    <input type="range" id="analysisYears" min="1" max="30" step="1" value="30" oninput="updateSlider('years', this.value)" style="width: 100%;">
+                </div>
+            </div>
+            
+            <div class="summary-card" id="sellCard">
+                <h4>💰 Sell & Invest</h4>
+                <div class="summary-value" id="sellTotal">$0</div>
+            </div>
+        </div>
+        
+        <div class="main-layout">
+            <!-- Chart Section -->
+            <div class="chart-only">
+                <div class="chart-container">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Controls Grid Below -->
+            <div class="controls-grid">
+                <!-- General Settings -->
+                <div class="control-panel general">
+                    <h3>🏡 General Settings</h3>
+                    <div class="input-group">
+                        <label for="currentValue">Current Market Value ($)</label>
+                        <input type="number" id="currentValue" value="179000" min="0" onchange="updateCalculation()">
+                    </div>
+                    <div class="input-group">
+                        <label for="originalPurchase">Original Purchase Price ($)</label>
+                        <input type="number" id="originalPurchase" value="91000" min="0" onchange="updateCalculation()">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Property Appreciation</span>
+                            <span class="slider-value" id="appreciationValue">3.5%</span>
+                        </div>
+                        <input type="range" id="propertyAppreciation" min="0" max="8" step="0.1" value="3.5" oninput="updateSlider('appreciation', this.value)">
+                    </div>
+                </div>
+
+                <!-- Rental Scenario Settings -->
+                <div class="control-panel rental">
+                    <h3>🏘️ Rental Scenario</h3>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Monthly Rent</span>
+                            <span class="slider-value" id="rentValue">$1,450</span>
+                        </div>
+                        <input type="range" id="monthlyRent" min="1000" max="4000" step="50" value="1450" oninput="updateSlider('rent', this.value)">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Rent Growth (Annual)</span>
+                            <span class="slider-value" id="rentGrowthValue">3%</span>
+                        </div>
+                        <input type="range" id="rentGrowth" min="0" max="6" step="0.1" value="3" oninput="updateSlider('rentGrowth', this.value)">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>HOA Fees (Monthly)</span>
+                            <span class="slider-value" id="hoaValue">$461</span>
+                        </div>
+                        <input type="range" id="hoaFees" min="0" max="800" step="25" value="461" oninput="updateSlider('hoa', this.value)">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Maintenance (Monthly)</span>
+                            <span class="slider-value" id="maintenanceValue">$0</span>
+                        </div>
+                        <input type="range" id="maintenance" min="0" max="500" step="25" value="0" oninput="updateSlider('maintenance', this.value)">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Property Mgmt (%)</span>
+                            <span class="slider-value" id="propMgmtValue">0.0%</span>
+                        </div>
+                        <input type="range" id="propManagement" min="0" max="15" step="0.5" value="0" oninput="updateSlider('propMgmt', this.value)">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Property Taxes (Annual)</span>
+                            <span class="slider-value" id="taxesValue">$2061</span>
+                        </div>
+                        <input type="range" id="propertyTaxes" min="2000" max="8000" step="100" value="2061" oninput="updateSlider('taxes', this.value)">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Insurance (Annual)</span>
+                            <span class="slider-value" id="insuranceValue">$300</span>
+                        </div>
+                        <input type="range" id="insurance" min="100" max="2000" step="25" value="300" oninput="updateSlider('insurance', this.value)">
+                    </div>
+                    <div class="control-section">
+                        <h3>📊 Tax Calculations</h3>
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>Marginal Tax Rate <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Your highest tax bracket rate. Common federal rates: 22% ($47K-$100K), 24% ($100K-$191K), 32% ($191K-$243K). Add ~3-5% for state taxes if applicable.</span>
+                                </span></span>
+                                <span class="slider-value" id="marginalTaxValue">24%</span>
+                            </div>
+                            <input type="range" id="marginalTaxRate" min="0" max="37" step="1" value="24" oninput="updateSlider('marginalTax', this.value)">
+                        </div>
+                        <div class="input-group">
+                            <label for="depreciationBasis">Depreciation Basis ($) <span class="tooltip">ℹ️
+                                <span class="tooltiptext">Usually your current property value. This amount ÷ 27.5 years = annual depreciation deduction. For $179K property = $6,509/year tax deduction.</span>
+                            </span></label>
+                            <input type="number" id="depreciationBasis" value="179000" min="0" onchange="updateCalculation()" placeholder="Usually current value">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selling Scenario Settings -->
+                <div class="control-panel selling">
+                    <h3>💰 Selling Scenario</h3>
+                    <div class="input-group">
+                        <label for="sellingCosts">Selling Costs (%)</label>
+                        <input type="number" id="sellingCosts" value="7" min="0" max="15" step="0.5" onchange="updateCalculation()">
+                    </div>
+                    <div class="input-group">
+                        <label for="capitalGainsRate">Capital Gains Tax (%)</label>
+                        <input type="number" id="capitalGainsRate" value="0" min="0" max="40" step="0.5" onchange="updateCalculation()">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Investment Return (Annual)</span>
+                            <span class="slider-value" id="investmentValue">7.0%</span>
+                        </div>
+                        <input type="range" id="investmentReturn" min="3" max="12" step="0.1" value="7" oninput="updateSlider('investment', this.value)">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chart;
+        
+        function updateSlider(type, value) {
+            switch(type) {
+                case 'appreciation':
+                    document.getElementById('appreciationValue').textContent = parseFloat(value).toFixed(1) + '%';
+                    break;
+                case 'rent':
+                    document.getElementById('rentValue').textContent = '$' + parseInt(value).toLocaleString();
+                    break;
+                case 'investment':
+                    document.getElementById('investmentValue').textContent = parseFloat(value).toFixed(1) + '%';
+                    break;
+                case 'rentGrowth':
+                    document.getElementById('rentGrowthValue').textContent = parseFloat(value).toFixed(1) + '%';
+                    break;
+                case 'hoa':
+                    document.getElementById('hoaValue').textContent = '$' + parseInt(value).toLocaleString();
+                    break;
+                case 'maintenance':
+                    document.getElementById('maintenanceValue').textContent = '$' + parseInt(value).toLocaleString();
+                    break;
+                case 'propMgmt':
+                    document.getElementById('propMgmtValue').textContent = parseFloat(value).toFixed(1) + '%';
+                    break;
+                case 'taxes':
+                    document.getElementById('taxesValue').textContent = '$' + parseInt(value).toLocaleString();
+                    break;
+                case 'insurance':
+                    document.getElementById('insuranceValue').textContent = '$' + parseInt(value).toLocaleString();
+                    break;
+                case 'years':
+                    document.getElementById('yearsValue').textContent = parseInt(value) + ' years';
+                    break;
+                case 'marginalTax':
+                    document.getElementById('marginalTaxValue').textContent = parseInt(value) + '%';
+                    break;
+            }
+            updateCalculation();
+        }
+        
+        function analyzeCrossovers(rentValues, sellValues) {
+            const crossovers = [];
+            let currentBetter = rentValues[0] > sellValues[0] ? 'rent' : 'sell';
+            let segmentStart = 1;
+            
+            // Find all crossover points
+            for (let i = 1; i < rentValues.length; i++) {
+                const rentBetter = rentValues[i] > sellValues[i];
+                const newBetter = rentBetter ? 'rent' : 'sell';
+                
+                if (newBetter !== currentBetter) {
+                    // Crossover detected
+                    crossovers.push({
+                        better: currentBetter,
+                        startYear: segmentStart,
+                        endYear: i,
+                        duration: i - segmentStart + 1
+                    });
+                    currentBetter = newBetter;
+                    segmentStart = i + 1;
+                }
+            }
+            
+            // Add final segment
+            crossovers.push({
+                better: currentBetter,
+                startYear: segmentStart,
+                endYear: 30,
+                duration: 30 - segmentStart + 1
+            });
+            
+            // Generate recommendation text
+            const finalRentValue = rentValues[rentValues.length - 1];
+            const finalSellValue = sellValues[sellValues.length - 1];
+            const finalDifference = Math.abs(finalRentValue - finalSellValue);
+            const finalBetter = finalRentValue > finalSellValue ? 'RENT' : 'SELL';
+            
+            if (crossovers.length === 1) {
+                // No crossovers - one strategy is always better
+                const strategy = crossovers[0].better.toUpperCase();
+                return `
+                    🎯 RECOMMENDATION: ${strategy}<br>
+                    ${strategy === 'RENT' ? 'Renting' : 'Selling'} is consistently better throughout all 30 years<br>
+                    Final advantage: $${Math.round(finalDifference).toLocaleString()}
+                `;
+            } else {
+                // Has crossovers - explain the pattern
+                let explanation = `🎯 STRATEGY: `;
+                
+                if (crossovers.length === 2) {
+                    const first = crossovers[0];
+                    const second = crossovers[1];
+                    if (first.better === 'rent') {
+                        explanation += `RENT is better for ${first.duration} year${first.duration > 1 ? 's' : ''}, then SELL becomes better<br>`;
+                    } else {
+                        explanation += `SELL is better for ${first.duration} year${first.duration > 1 ? 's' : ''}, then RENT becomes better<br>`;
+                    }
+                    explanation += `Crossover at year ${second.startYear}. Final: ${finalBetter} by $${Math.round(finalDifference).toLocaleString()}`;
+                } else {
+                    // Multiple crossovers
+                    explanation += `Multiple crossovers detected<br>`;
+                    const segments = crossovers.slice(0, 2).map(seg => 
+                        `${seg.better.toUpperCase()} (yrs ${seg.startYear}-${seg.endYear})`
+                    ).join(', then ');
+                    explanation += `${segments}...<br>Final: ${finalBetter} by $${Math.round(finalDifference).toLocaleString()}`;
+                }
+                
+                return explanation;
+            }
+        }
+        
+        function updateCalculation() {
+            // Get all values
+            const currentValue = parseFloat(document.getElementById('currentValue').value) || 0;
+            const originalPurchase = parseFloat(document.getElementById('originalPurchase').value) || 0;
+            const propertyAppreciation = parseFloat(document.getElementById('propertyAppreciation').value) || 0;
+            const monthlyRent = parseFloat(document.getElementById('monthlyRent').value) || 0;
+            const investmentReturn = parseFloat(document.getElementById('investmentReturn').value) || 0;
+            const rentGrowth = parseFloat(document.getElementById('rentGrowth').value) || 0;
+            const hoaFees = parseFloat(document.getElementById('hoaFees').value) || 0;
+            const maintenance = parseFloat(document.getElementById('maintenance').value) || 0;
+            const propManagement = parseFloat(document.getElementById('propManagement').value) || 0;
+            const propertyTaxes = parseFloat(document.getElementById('propertyTaxes').value) || 0;
+            const insurance = parseFloat(document.getElementById('insurance').value) || 0;
+            const sellingCosts = parseFloat(document.getElementById('sellingCosts').value) || 0;
+            const capitalGainsRate = parseFloat(document.getElementById('capitalGainsRate').value) || 0;
+            const marginalTaxRate = parseFloat(document.getElementById('marginalTaxRate').value) || 0;
+            const depreciationBasis = parseFloat(document.getElementById('depreciationBasis').value) || currentValue;
+            const selectedYear = parseInt(document.getElementById('analysisYears').value) || 30; // Selected year for display
+            
+            // Calculate selling scenario (no mortgage to pay off)
+            const grossSellingCosts = currentValue * (sellingCosts / 100);
+            const capitalGain = Math.max(0, currentValue - originalPurchase);
+            const capitalGainsTax = capitalGain * (capitalGainsRate / 100);
+            const netProceeds = currentValue - grossSellingCosts - capitalGainsTax;
+            
+            // Calculate projections for full 30 years (for chart)
+            const years = Array.from({length: 30}, (_, i) => i + 1);
+            const rentValues = [];
+            const sellValues = [];
+
+            for (let year = 1; year <= 30; year++) {
+                // Rental scenario (no mortgage payments)
+                const futureValue = currentValue * Math.pow(1 + propertyAppreciation / 100, year);
+                
+                // Calculate cumulative cash flow properly - sum of each year's net cash flow
+                let cumulativeCashFlow = 0;
+                const annualDepreciation = depreciationBasis / 27.5; // Residential rental depreciation
+                
+                for (let y = 1; y <= year; y++) {
+                    const yearRent = monthlyRent * Math.pow(1 + rentGrowth / 100, y);
+                    const yearPropMgmt = yearRent * (propManagement / 100);
+                    const monthlyTaxes = propertyTaxes / 12;
+                    const monthlyInsurance = insurance / 12;
+                    const monthlyExpenses = hoaFees + maintenance + yearPropMgmt + monthlyTaxes + monthlyInsurance;
+                    const monthlyNet = yearRent - monthlyExpenses;
+                    const yearlyNet = monthlyNet * 12;
+                    
+                    // Calculate rental income taxes
+                    const totalDeductibleExpenses = (hoaFees + maintenance + yearPropMgmt) * 12 + propertyTaxes + insurance;
+                    const taxableIncome = Math.max(0, (yearRent * 12) - totalDeductibleExpenses - annualDepreciation);
+                    const incomeTax = taxableIncome * (marginalTaxRate / 100);
+                    
+                    // Net cash flow after income taxes
+                    const afterTaxNet = yearlyNet - incomeTax;
+                    cumulativeCashFlow += afterTaxNet;
+                }
+                
+                // Total rental value = property value + cash you've actually collected
+                // This represents your total net worth from keeping the property
+                const totalRentalValue = futureValue + cumulativeCashFlow;
+                
+                // Sell scenario - what your investment would be worth
+                const investmentValue = netProceeds * Math.pow(1 + investmentReturn / 100, year);
+                
+                rentValues.push(totalRentalValue);
+                sellValues.push(investmentValue);
+            }
+            
+            // Update chart with full 30-year data but highlight selected year
+            updateChart(years, rentValues, sellValues, selectedYear);
+            
+            // Update summary cards with selected year values
+            const selectedRentValue = rentValues[selectedYear - 1];
+            const selectedSellValue = sellValues[selectedYear - 1];
+            const rentBetter = selectedRentValue > selectedSellValue;
+            
+            document.getElementById('rentTotal').textContent = '$' + Math.round(selectedRentValue).toLocaleString();
+            document.getElementById('sellTotal').textContent = '$' + Math.round(selectedSellValue).toLocaleString();
+            
+            // Update card styling based on selected year
+            if (rentBetter) {
+                document.getElementById('rentCard').classList.add('better');
+                document.getElementById('sellCard').classList.remove('better');
+            } else {
+                document.getElementById('sellCard').classList.add('better');
+                document.getElementById('rentCard').classList.remove('better');
+            }
+            
+            // Analyze crossover patterns for full 30 years
+            const crossoverAnalysis = analyzeCrossovers(rentValues, sellValues);
+            
+            // Update recommendation with selected year context
+            const difference = Math.abs(selectedRentValue - selectedSellValue);
+            const recommendationEl = document.getElementById('recommendationText');
+            const recommendationContainer = document.getElementById('recommendation');
+            const betterOption = rentBetter ? 'RENT' : 'SELL';
+            const recommendationClass = rentBetter ? 'rent-better' : 'sell-better';
+            
+            recommendationContainer.className = `recommendation ${recommendationClass}`;
+            
+            // Show selected year summary plus crossover analysis
+            const yearSummary = `
+                🎯 YEAR ${selectedYear}: ${betterOption}<br>
+                Better by $${Math.round(difference).toLocaleString()}<br>
+                <small style="opacity: 0.9;">${crossoverAnalysis.replace('🎯 STRATEGY: ', '').replace('🎯 RECOMMENDATION: ', '')}</small>
+            `;
+            
+            recommendationEl.innerHTML = yearSummary;
+        }
+        
+        function updateChart(years, rentValues, sellValues, highlightYear = 30) {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: 'Keep & Rent',
+                        data: rentValues,
+                        borderColor: '#27ae60',
+                        backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.1,
+                        pointRadius: years.map((year, index) => year === highlightYear ? 6 : 2),
+                        pointHoverRadius: 5,
+                        pointBackgroundColor: years.map((year, index) => year === highlightYear ? '#e74c3c' : '#27ae60'),
+                        pointBorderColor: years.map((year, index) => year === highlightYear ? '#c0392b' : '#27ae60'),
+                        pointBorderWidth: years.map((year, index) => year === highlightYear ? 3 : 1)
+                    }, {
+                        label: 'Sell & Invest',
+                        data: sellValues,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.1,
+                        pointRadius: years.map((year, index) => year === highlightYear ? 6 : 2),
+                        pointHoverRadius: 5,
+                        pointBackgroundColor: years.map((year, index) => year === highlightYear ? '#e74c3c' : '#3498db'),
+                        pointBorderColor: years.map((year, index) => year === highlightYear ? '#c0392b' : '#3498db'),
+                        pointBorderWidth: years.map((year, index) => year === highlightYear ? 3 : 1)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: false
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                padding: 15,
+                                font: {
+                                    size: 13
+                                }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                beforeBody: function(tooltipItems) {
+                                    const rentValue = tooltipItems.find(item => item.datasetIndex === 0)?.raw || 0;
+                                    const sellValue = tooltipItems.find(item => item.datasetIndex === 1)?.raw || 0;
+                                    const difference = Math.abs(rentValue - sellValue);
+                                    const betterOption = rentValue > sellValue ? 'Rent' : 'Sell';
+                                    return `${betterOption} is better by $${Math.round(difference).toLocaleString()}`;
+                                },
+                                label: function(context) {
+                                    const label = context.dataset.label || '';
+                                    const value = context.parsed.y;
+                                    return `${label}: $${Math.round(value).toLocaleString()}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Years'
+                            },
+                            grid: {
+                                display: true,
+                                color: 'rgba(0,0,0,0.1)'
+                            },
+                            ticks: {
+                                maxTicksLimit: 31, // Show all years 1-30
+                                callback: function(value, index) {
+                                    // Show every 5th year plus year 1 and 30
+                                    const year = this.getLabelForValue(value);
+                                    if (year === 1 || year === 30 || year % 5 === 0) {
+                                        return year;
+                                    }
+                                    return '';
+                                }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Total Value ($)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + (value / 1000).toFixed(0) + 'k';
+                                }
+                            },
+                            grid: {
+                                display: true,
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+        
+        // Initialize on page load
+        window.onload = function() {
+            updateCalculation();
+        };
+    </script>
+</body>
+</html>
