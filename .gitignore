@@ -21,3 +21,6 @@ Thumbs.db
 *.zip
 *.tar.gz
 *.rar
+
+# Project specific files
+pennsbury_village_rental.zip
