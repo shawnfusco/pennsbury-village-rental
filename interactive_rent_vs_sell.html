@@ -453,20 +453,77 @@
                 <!-- Selling Scenario Settings -->
                 <div class="control-panel selling">
                     <h3>💰 Selling Scenario</h3>
-                    <div class="input-group">
-                        <label for="sellingCosts">Selling Costs (%)</label>
-                        <input type="number" id="sellingCosts" value="7" min="0" max="15" step="0.5" onchange="updateCalculation()">
-                    </div>
-                    <div class="input-group">
-                        <label for="capitalGainsRate">Capital Gains Tax (%)</label>
-                        <input type="number" id="capitalGainsRate" value="0" min="0" max="40" step="0.5" onchange="updateCalculation()">
-                    </div>
-                    <div class="slider-group">
-                        <div class="slider-label">
-                            <span>Investment Return (Annual)</span>
-                            <span class="slider-value" id="investmentValue">8.0%</span>
+                    
+                    <div class="control-section">
+                        <h3>🏠 Pre-Sale Costs</h3>
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>Repairs & Staging <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Typical costs: $2K-$15K for repairs, painting, cleaning, staging to maximize sale price.</span>
+                                </span></span>
+                                <span class="slider-value" id="repairsValue">$5,000</span>
+                            </div>
+                            <input type="range" id="repairsCosts" min="0" max="25000" step="500" value="5000" oninput="updateSlider('repairs', this.value)">
                         </div>
-                        <input type="range" id="investmentReturn" min="3" max="12" step="0.1" value="8" oninput="updateSlider('investment', this.value)">
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>Home Inspection <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Pre-listing inspection to identify issues early. Typical cost: $300-$600.</span>
+                                </span></span>
+                                <span class="slider-value" id="inspectionValue">$450</span>
+                            </div>
+                            <input type="range" id="inspectionCosts" min="0" max="1000" step="50" value="450" oninput="updateSlider('inspection', this.value)">
+                        </div>
+                    </div>
+                    
+                    <div class="control-section">
+                        <h3>🏘️ Transaction Costs</h3>
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>Real Estate Commission <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Typically 5-6% total (2.5-3% each for buyer's and seller's agents). Negotiate for lower rates.</span>
+                                </span></span>
+                                <span class="slider-value" id="commissionValue">5.5%</span>
+                            </div>
+                            <input type="range" id="realtorCommission" min="0" max="8" step="0.1" value="5.5" oninput="updateSlider('commission', this.value)">
+                        </div>
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>Title & Closing Costs <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Title insurance, attorney fees, transfer taxes, recording fees. Usually 1-2% of sale price.</span>
+                                </span></span>
+                                <span class="slider-value" id="closingValue">1.5%</span>
+                            </div>
+                            <input type="range" id="closingCosts" min="0.5" max="3" step="0.1" value="1.5" oninput="updateSlider('closing', this.value)">
+                        </div>
+                    </div>
+                    
+                    <div class="control-section">
+                        <h3>📊 Taxes & Investment</h3>
+                        <div class="input-group">
+                            <label for="capitalGainsRate">Capital Gains Tax (%) <span class="tooltip">ℹ️
+                                <span class="tooltiptext">0% if held >2 years and under income limits. Otherwise 15% or 20% for long-term gains. Add state taxes.</span>
+                            </span></label>
+                            <input type="number" id="capitalGainsRate" value="0" min="0" max="40" step="0.5" onchange="updateCalculation()">
+                        </div>
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>Investment Return (Annual) <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Historical S&P 500: ~10%. Conservative estimate: 7-8%. Consider your risk tolerance and investment strategy.</span>
+                                </span></span>
+                                <span class="slider-value" id="investmentValue">8.0%</span>
+                            </div>
+                            <input type="range" id="investmentReturn" min="3" max="12" step="0.1" value="8" oninput="updateSlider('investment', this.value)">
+                        </div>
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>Investment Tax Rate <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Tax on investment gains/dividends. Long-term capital gains typically 0%, 15%, or 20% depending on income.</span>
+                                </span></span>
+                                <span class="slider-value" id="investmentTaxValue">15%</span>
+                            </div>
+                            <input type="range" id="investmentTaxRate" min="0" max="40" step="1" value="15" oninput="updateSlider('investmentTax', this.value)">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -558,6 +615,21 @@
                 case 'marginalTax':
                     document.getElementById('marginalTaxValue').textContent = parseInt(value) + '%';
                     break;
+                case 'repairs':
+                    document.getElementById('repairsValue').textContent = '$' + parseInt(value).toLocaleString();
+                    break;
+                case 'inspection':
+                    document.getElementById('inspectionValue').textContent = '$' + parseInt(value).toLocaleString();
+                    break;
+                case 'commission':
+                    document.getElementById('commissionValue').textContent = parseFloat(value).toFixed(1) + '%';
+                    break;
+                case 'closing':
+                    document.getElementById('closingValue').textContent = parseFloat(value).toFixed(1) + '%';
+                    break;
+                case 'investmentTax':
+                    document.getElementById('investmentTaxValue').textContent = parseInt(value) + '%';
+                    break;
             }
             updateCalculation();
         }
@@ -646,11 +718,17 @@
             const propManagement = parseFloat(document.getElementById('propManagement').value) || 0;
             const propertyTaxes = parseFloat(document.getElementById('propertyTaxes').value) || 0;
             const insurance = parseFloat(document.getElementById('insurance').value) || 0;
-            const sellingCosts = parseFloat(document.getElementById('sellingCosts').value) || 0;
             const capitalGainsRate = parseFloat(document.getElementById('capitalGainsRate').value) || 0;
             const marginalTaxRate = parseFloat(document.getElementById('marginalTaxRate').value) || 0;
             const depreciationBasis = parseFloat(document.getElementById('depreciationBasis').value) || currentValue;
             const selectedYear = parseInt(document.getElementById('analysisYears').value) || 30; // Selected year for display
+            
+            // New detailed selling costs
+            const repairsCosts = parseFloat(document.getElementById('repairsCosts').value) || 0;
+            const inspectionCosts = parseFloat(document.getElementById('inspectionCosts').value) || 0;
+            const realtorCommission = parseFloat(document.getElementById('realtorCommission').value) || 0;
+            const closingCosts = parseFloat(document.getElementById('closingCosts').value) || 0;
+            const investmentTaxRate = parseFloat(document.getElementById('investmentTaxRate').value) || 0;
             
             // Mortgage variables
             const hasMortgage = document.getElementById('hasMortgage').checked;
@@ -659,13 +737,15 @@
             const mortgageRate = parseFloat(document.getElementById('mortgageRate').value) || 0;
             
             // Calculate selling scenario
-            const grossSellingCosts = currentValue * (sellingCosts / 100);
+            const commissionCosts = currentValue * (realtorCommission / 100);
+            const titleClosingCosts = currentValue * (closingCosts / 100);
+            const totalSellingCosts = repairsCosts + inspectionCosts + commissionCosts + titleClosingCosts;
             const capitalGain = Math.max(0, currentValue - originalPurchase);
             const capitalGainsTax = capitalGain * (capitalGainsRate / 100);
             
             // Net proceeds after paying off mortgage (if any)
             const mortgagePayoff = hasMortgage ? remainingBalance : 0;
-            const netProceeds = currentValue - grossSellingCosts - capitalGainsTax - mortgagePayoff;
+            const netProceeds = currentValue - totalSellingCosts - capitalGainsTax - mortgagePayoff;
             
             // Calculate projections for full 30 years (for chart)
             const years = Array.from({length: 30}, (_, i) => i + 1);
@@ -710,8 +790,11 @@
                 // This represents your total net worth from keeping the property
                 const totalRentalValue = futureValue + cumulativeCashFlow;
                 
-                // Sell scenario - what your investment would be worth
-                const investmentValue = netProceeds * Math.pow(1 + investmentReturn / 100, year);
+                // Sell scenario - what your investment would be worth (after taxes)
+                const grossInvestmentValue = netProceeds * Math.pow(1 + investmentReturn / 100, year);
+                const investmentGain = grossInvestmentValue - netProceeds;
+                const investmentTax = investmentGain * (investmentTaxRate / 100);
+                const investmentValue = grossInvestmentValue - investmentTax;
                 
                 rentValues.push(totalRentalValue);
                 sellValues.push(investmentValue);
