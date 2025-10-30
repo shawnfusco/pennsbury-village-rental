@@ -336,22 +336,36 @@
                     <h3>🏡 General Settings</h3>
                     <div class="input-group">
                         <label for="currentValue">Current Market Value ($)</label>
-                        <input type="number" id="currentValue" value="175000" min="0" onchange="updateAppreciationFromValues()">
+                        <input type="number" id="currentValue" value="227000" min="0" onchange="updateAppreciationFromValues()">
                     </div>
                     <div class="input-group">
                         <label for="originalPurchase">Original Purchase Price ($)</label>
-                        <input type="number" id="originalPurchase" value="94000" min="0" onchange="updateAppreciationFromValues()">
+                        <input type="number" id="originalPurchase" value="139000" min="0" onchange="updateAppreciationFromValues()">
                     </div>
                     <div class="input-group">
                         <label for="purchaseYear">Purchase Year</label>
-                        <input type="number" id="purchaseYear" value="2005" min="1950" max="2025" onchange="updateAppreciationFromValues()">
+                        <input type="number" id="purchaseYear" value="2018" min="1950" max="2025" onchange="updateAppreciationFromValues()">
                     </div>
-                    <div class="slider-group">
-                        <div class="slider-label">
-                            <span>Property Appreciation</span>
-                            <span class="slider-value" id="appreciationValue">3.5%</span>
+                    <div class="control-section">
+                        <h3>📈 Property Appreciation</h3>
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>Historical Appreciation <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Calculated from your actual purchase year and current value. This is what already happened.</span>
+                                </span></span>
+                                <span class="slider-value" id="historicalAppreciationValue">3.5%</span>
+                            </div>
+                            <input type="range" id="historicalAppreciation" min="0" max="15" step="0.1" value="3.5" disabled style="opacity: 0.6;">
                         </div>
-                        <input type="range" id="propertyAppreciation" min="0" max="8" step="0.1" value="3.5" oninput="updateSlider('appreciation', this.value)">
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>Future Appreciation <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Your projection for future annual appreciation. Consider market conditions, neighborhood trends, and economic outlook.</span>
+                                </span></span>
+                                <span class="slider-value" id="futureAppreciationValue">3.0%</span>
+                            </div>
+                            <input type="range" id="futureAppreciation" min="0" max="8" step="0.1" value="3.0" oninput="updateSlider('futureAppreciation', this.value)">
+                        </div>
                     </div>
                     <div class="control-section">
                         <h3>🏦 Mortgage Information</h3>
@@ -384,9 +398,9 @@
                     <div class="slider-group">
                         <div class="slider-label">
                             <span>Monthly Rent</span>
-                            <span class="slider-value" id="rentValue">$1,450</span>
+                            <span class="slider-value" id="rentValue">$1,400</span>
                         </div>
-                        <input type="range" id="monthlyRent" min="1000" max="4000" step="50" value="1450" oninput="updateSlider('rent', this.value)">
+                        <input type="range" id="monthlyRent" min="1000" max="4000" step="50" value="1400" oninput="updateSlider('rent', this.value)">
                     </div>
                     <div class="slider-group">
                         <div class="slider-label">
@@ -398,16 +412,16 @@
                     <div class="slider-group">
                         <div class="slider-label">
                             <span>HOA Fees (Monthly)</span>
-                            <span class="slider-value" id="hoaValue">$461</span>
+                            <span class="slider-value" id="hoaValue">$0</span>
                         </div>
-                        <input type="range" id="hoaFees" min="0" max="800" step="25" value="461" oninput="updateSlider('hoa', this.value)">
+                        <input type="range" id="hoaFees" min="0" max="800" step="25" value="0" oninput="updateSlider('hoa', this.value)">
                     </div>
                     <div class="slider-group">
                         <div class="slider-label">
                             <span>Maintenance (Monthly)</span>
                             <span class="slider-value" id="maintenanceValue">$0</span>
                         </div>
-                        <input type="range" id="maintenance" min="0" max="500" step="25" value="0" oninput="updateSlider('maintenance', this.value)">
+                        <input type="range" id="maintenance" min="0" max="1000" step="50" value="0" oninput="updateSlider('maintenance', this.value)">
                     </div>
                     <div class="slider-group">
                         <div class="slider-label">
@@ -419,16 +433,16 @@
                     <div class="slider-group">
                         <div class="slider-label">
                             <span>Property Taxes (Annual)</span>
-                            <span class="slider-value" id="taxesValue">$2061</span>
+                            <span class="slider-value" id="taxesValue">$3,200</span>
                         </div>
-                        <input type="range" id="propertyTaxes" min="2000" max="8000" step="100" value="2061" oninput="updateSlider('taxes', this.value)">
+                        <input type="range" id="propertyTaxes" min="1000" max="8000" step="100" value="3200" oninput="updateSlider('taxes', this.value)">
                     </div>
                     <div class="slider-group">
                         <div class="slider-label">
                             <span>Insurance (Annual)</span>
-                            <span class="slider-value" id="insuranceValue">$300</span>
+                            <span class="slider-value" id="insuranceValue">$1,700</span>
                         </div>
-                        <input type="range" id="insurance" min="100" max="2000" step="25" value="300" oninput="updateSlider('insurance', this.value)">
+                        <input type="range" id="insurance" min="500" max="3000" step="50" value="1700" oninput="updateSlider('insurance', this.value)">
                     </div>
                     <div class="control-section">
                         <h3>📊 Tax Calculations</h3>
@@ -443,9 +457,9 @@
                         </div>
                         <div class="input-group">
                             <label for="depreciationBasis">Depreciation Basis ($) <span class="tooltip">ℹ️
-                                <span class="tooltiptext">Usually your current property value. This amount ÷ 27.5 years = annual depreciation deduction. For $179K property = $6,509/year tax deduction.</span>
+                                <span class="tooltiptext">Usually your current property value. This amount ÷ 27.5 years = annual depreciation deduction. For $175K property = $6,364/year tax deduction.</span>
                             </span></label>
-                            <input type="number" id="depreciationBasis" value="175000" min="0" onchange="updateCalculation()" placeholder="Usually current value">
+                            <input type="number" id="depreciationBasis" value="175000" min="0" onchange="updateCalculation()" placeholder="Auto-updates with current value">
                         </div>
                     </div>
                 </div>
@@ -500,32 +514,91 @@
                     
                     <div class="control-section">
                         <h3>📊 Taxes & Investment</h3>
-                        <div class="input-group">
-                            <label for="capitalGainsRate">Capital Gains Tax (%) <span class="tooltip">ℹ️
-                                <span class="tooltiptext">0% if held >2 years and under income limits. Otherwise 15% or 20% for long-term gains. Add state taxes.</span>
-                            </span></label>
-                            <input type="number" id="capitalGainsRate" value="0" min="0" max="40" step="0.5" onchange="updateCalculation()">
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>Capital Gains Tax <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">Real estate: 0% (primary residence), 15% (most people), 20% (high income), 25% (depreciation recapture). Add 3-13% state taxes.</span>
+                                </span></span>
+                                <span class="slider-value" id="capitalGainsValue">15%</span>
+                            </div>
+                            <input type="range" id="capitalGainsRate" min="0" max="35" step="1" value="15" oninput="updateSlider('capitalGains', this.value)">
                         </div>
                         <div class="slider-group">
                             <div class="slider-label">
                                 <span>Investment Return (Annual) <span class="tooltip">ℹ️
-                                    <span class="tooltiptext">Historical S&P 500: ~10%. Conservative estimate: 7-8%. Consider your risk tolerance and investment strategy.</span>
+                                    <span class="tooltiptext">S&P 500 historical: 10-11%. Conservative: 6-7%. Aggressive: 8-10%. Consider fees, taxes, and volatility.</span>
                                 </span></span>
-                                <span class="slider-value" id="investmentValue">8.0%</span>
+                                <span class="slider-value" id="investmentValue">7.5%</span>
                             </div>
-                            <input type="range" id="investmentReturn" min="3" max="12" step="0.1" value="8" oninput="updateSlider('investment', this.value)">
+                            <input type="range" id="investmentReturn" min="4" max="12" step="0.1" value="7.5" oninput="updateSlider('investment', this.value)">
                         </div>
                         <div class="slider-group">
                             <div class="slider-label">
                                 <span>Investment Tax Rate <span class="tooltip">ℹ️
-                                    <span class="tooltiptext">Tax on investment gains/dividends. Long-term capital gains typically 0%, 15%, or 20% depending on income.</span>
+                                    <span class="tooltiptext">Tax on investment gains/dividends. 0% (low income), 15% (most people), 20% (high income). Consider tax-advantaged accounts.</span>
                                 </span></span>
                                 <span class="slider-value" id="investmentTaxValue">15%</span>
                             </div>
-                            <input type="range" id="investmentTaxRate" min="0" max="40" step="1" value="15" oninput="updateSlider('investmentTax', this.value)">
+                            <input type="range" id="investmentTaxRate" min="0" max="25" step="1" value="15" oninput="updateSlider('investmentTax', this.value)">
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mortgage Payment Calculator -->
+    <div class="container" style="margin-top: 20px;">
+        <h2 style="color: #2c3e50; text-align: center; margin-bottom: 20px; font-size: 20px;">🏦 Mortgage Payment Calculator</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start;">
+            <!-- Input Section -->
+            <div class="control-panel" style="border-left: 4px solid #e67e22;">
+                <h3>💰 Loan Details</h3>
+                <div class="input-group">
+                    <label for="loanAmount">Loan Amount ($)</label>
+                    <input type="number" id="loanAmount" value="140000" min="0" onchange="calculateMortgage()" placeholder="Amount to borrow">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Interest Rate (Annual)</span>
+                        <span class="slider-value" id="mortgageInterestValue">6.5%</span>
+                    </div>
+                    <input type="range" id="mortgageInterestRate" min="2" max="10" step="0.1" value="6.5" oninput="updateMortgageSlider('mortgageInterest', this.value)">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Loan Term</span>
+                        <span class="slider-value" id="loanTermValue">30 years</span>
+                    </div>
+                    <input type="range" id="loanTerm" min="10" max="30" step="5" value="30" oninput="updateMortgageSlider('loanTerm', this.value)">
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="control-panel" style="border-left: 4px solid #27ae60;">
+                <h3>📊 Payment Breakdown</h3>
+                <div style="margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-weight: bold;">Monthly Payment:</span>
+                        <span id="monthlyPaymentResult" style="font-size: 18px; font-weight: bold; color: #2c3e50;">$0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Principal & Interest:</span>
+                        <span id="principalInterestResult" style="color: #2c3e50;">$0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Total Interest Paid:</span>
+                        <span id="totalInterestResult" style="color: #e74c3c;">$0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Total Amount Paid:</span>
+                        <span id="totalAmountResult" style="color: #2c3e50;">$0</span>
+                    </div>
+                </div>
+                <button onclick="copyToMortgageFields()" style="width: 100%; padding: 10px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                    📋 Copy to Mortgage Fields Above
+                </button>
             </div>
         </div>
     </div>
@@ -560,9 +633,14 @@
         function updateAppreciationFromValues() {
             const calculatedRate = calculateAppreciationRate();
             const roundedRate = Math.round(calculatedRate * 10) / 10; // Round to 1 decimal
+            const currentValue = parseFloat(document.getElementById('currentValue').value) || 0;
             
-            document.getElementById('propertyAppreciation').value = roundedRate;
-            document.getElementById('appreciationValue').textContent = roundedRate.toFixed(1) + '%';
+            // Update historical appreciation (calculated, read-only)
+            document.getElementById('historicalAppreciation').value = roundedRate;
+            document.getElementById('historicalAppreciationValue').textContent = roundedRate.toFixed(1) + '%';
+            
+            // Update depreciation basis to current market value
+            document.getElementById('depreciationBasis').value = currentValue;
             
             updateCalculation();
         }
@@ -580,10 +658,74 @@
             updateCalculation();
         }
         
+        // Mortgage Calculator Functions
+        function updateMortgageSlider(type, value) {
+            switch(type) {
+                case 'mortgageInterest':
+                    document.getElementById('mortgageInterestValue').textContent = parseFloat(value).toFixed(1) + '%';
+                    break;
+                case 'loanTerm':
+                    document.getElementById('loanTermValue').textContent = parseInt(value) + ' years';
+                    break;
+            }
+            calculateMortgage();
+        }
+        
+        function calculateMortgage() {
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value) || 0;
+            const annualRate = parseFloat(document.getElementById('mortgageInterestRate').value) || 0;
+            const loanTermYears = parseInt(document.getElementById('loanTerm').value) || 30;
+            
+            if (loanAmount <= 0 || annualRate <= 0) {
+                document.getElementById('monthlyPaymentResult').textContent = '$0';
+                document.getElementById('principalInterestResult').textContent = '$0';
+                document.getElementById('totalInterestResult').textContent = '$0';
+                document.getElementById('totalAmountResult').textContent = '$0';
+                return;
+            }
+            
+            // Calculate monthly payment using standard mortgage formula
+            const monthlyRate = annualRate / 100 / 12;
+            const numPayments = loanTermYears * 12;
+            
+            const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
+                                 (Math.pow(1 + monthlyRate, numPayments) - 1);
+            
+            const totalAmount = monthlyPayment * numPayments;
+            const totalInterest = totalAmount - loanAmount;
+            
+            // Update display
+            document.getElementById('monthlyPaymentResult').textContent = '$' + Math.round(monthlyPayment).toLocaleString();
+            document.getElementById('principalInterestResult').textContent = '$' + Math.round(monthlyPayment).toLocaleString();
+            document.getElementById('totalInterestResult').textContent = '$' + Math.round(totalInterest).toLocaleString();
+            document.getElementById('totalAmountResult').textContent = '$' + Math.round(totalAmount).toLocaleString();
+        }
+        
+        function copyToMortgageFields() {
+            const monthlyPayment = parseFloat(document.getElementById('monthlyPaymentResult').textContent.replace(/[$,]/g, '')) || 0;
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value) || 0;
+            const interestRate = parseFloat(document.getElementById('mortgageInterestRate').value) || 0;
+            
+            // Copy to mortgage fields in main calculator
+            document.getElementById('remainingBalance').value = loanAmount;
+            document.getElementById('monthlyPayment').value = monthlyPayment;
+            document.getElementById('mortgageRate').value = interestRate;
+            
+            // Enable mortgage checkbox
+            document.getElementById('hasMortgage').checked = true;
+            toggleMortgageFields();
+            
+            // Show confirmation
+            alert('✅ Mortgage details copied to calculator above!');
+        }
+        
         function updateSlider(type, value) {
             switch(type) {
                 case 'appreciation':
                     document.getElementById('appreciationValue').textContent = parseFloat(value).toFixed(1) + '%';
+                    break;
+                case 'futureAppreciation':
+                    document.getElementById('futureAppreciationValue').textContent = parseFloat(value).toFixed(1) + '%';
                     break;
                 case 'rent':
                     document.getElementById('rentValue').textContent = '$' + parseInt(value).toLocaleString();
@@ -629,6 +771,9 @@
                     break;
                 case 'investmentTax':
                     document.getElementById('investmentTaxValue').textContent = parseInt(value) + '%';
+                    break;
+                case 'capitalGains':
+                    document.getElementById('capitalGainsValue').textContent = parseInt(value) + '%';
                     break;
             }
             updateCalculation();
@@ -709,7 +854,7 @@
             // Get all values
             const currentValue = parseFloat(document.getElementById('currentValue').value) || 0;
             const originalPurchase = parseFloat(document.getElementById('originalPurchase').value) || 0;
-            const propertyAppreciation = parseFloat(document.getElementById('propertyAppreciation').value) || 0;
+            const futureAppreciation = parseFloat(document.getElementById('futureAppreciation').value) || 0;
             const monthlyRent = parseFloat(document.getElementById('monthlyRent').value) || 0;
             const investmentReturn = parseFloat(document.getElementById('investmentReturn').value) || 0;
             const rentGrowth = parseFloat(document.getElementById('rentGrowth').value) || 0;
@@ -753,8 +898,8 @@
             const sellValues = [];
 
             for (let year = 1; year <= 30; year++) {
-                // Rental scenario (no mortgage payments)
-                const futureValue = currentValue * Math.pow(1 + propertyAppreciation / 100, year);
+                // Rental scenario - future property value based on projected appreciation
+                const futureValue = currentValue * Math.pow(1 + futureAppreciation / 100, year);
                 
                 // Calculate cumulative cash flow properly - sum of each year's net cash flow
                 let cumulativeCashFlow = 0;
@@ -966,6 +1111,7 @@
         // Initialize on page load
         window.onload = function() {
             updateAppreciationFromValues(); // Calculate and set appreciation rate first
+            calculateMortgage(); // Initialize mortgage calculator
         };
     </script>
 </body>
