@@ -1,20 +1,22 @@
 # Rent vs Sell Calculator
 
-Interactive HTML calculator that compares keeping/renting your property vs selling and investing the proceeds.
-
-## Files
-- `calc.html` - The calculator (open in browser)
-- `PROJECT_SUMMARY.md` - Project overview
-
-## Usage
-Open `calc.html` in a web browser.
+Interactive calculator comparing keeping/renting your property vs selling and investing proceeds. Includes mortgage payment calculator.
 
 ## What It Does
-Compares two scenarios over 0-30 years:
-- **Keep & Rent**: Property value + rental cash flow
-- **Sell & Invest**: Sale proceeds invested at market returns
+- **Rent vs Sell**: Compare scenarios over 1-30 years with real-time charts
+- **Mortgage Calculator**: Calculate monthly payments and payment breakdowns
+- **Interactive Controls**: Sliders for all variables with instant updates
 
-Uses interactive sliders for rent, expenses, appreciation rates, and time period.
+## Files
+- `calc.html` - Main calculator (open in browser)
+- `PROJECT_SUMMARY.md` - Project overview
+- `LICENSE` - GPL v3 license
+- `README.md` - This file
+
+## Usage
+Open `calc.html` in any web browser. No installation required.
 
 ## License
-GPL v3 - See LICENSE file for details.
+GPL v3 - Free to use and modify. See `LICENSE` for details.
+
+Copyright (C) 2025 Shawn Fusco
